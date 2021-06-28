@@ -1,3 +1,7 @@
+provider "aws" {
+  region  = var.aws_region
+}
+
 module "checkout-lambda-function" {
   source = "terraform-aws-modules/lambda/aws"
 
