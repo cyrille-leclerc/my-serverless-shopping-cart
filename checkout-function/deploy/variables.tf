@@ -28,3 +28,15 @@ variable "tracing_mode" {
   description = "Lambda function tracing mode"
   default     = "PassThrough"
 }
+
+variable "elastic_otlp_endpoint" {
+  type        = string
+  description = "Elastic OTLP endpoint (e.g. 'apm-server.elastic.mycompany.com:443')"
+}
+
+variable "elastic_otlp_token" {
+  type        = string
+  sensitive   = true
+  description = "Elastic OTLP token (aka APM Server Token)"
+}
+

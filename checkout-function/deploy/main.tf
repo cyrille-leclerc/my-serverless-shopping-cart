@@ -21,6 +21,9 @@ module "checkout-lambda-function" {
 
   environment_variables = {
     AWS_LAMBDA_EXEC_WRAPPER = "/opt/otel-proxy-handler"
+    OPENTELEMETRY_COLLECTOR_CONFIG_FILE: "/var/task/opentelemetry-collector.yaml"
+    ELASTIC_OTLP_ENDPOINT: var.elastic_otlp_endpoint
+    ELASTIC_OTLP_TOKEN: var.elastic_otlp_token
   }
 
   tracing_mode = var.tracing_mode
