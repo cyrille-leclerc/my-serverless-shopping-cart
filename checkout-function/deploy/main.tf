@@ -15,6 +15,7 @@ module "checkout-lambda-function" {
   memory_size = 384
   timeout     = 20
 
+  // see https://github.com/aws-observability/aws-otel-lambda/blob/main/sample-apps/java-wrapper-okhttp-terraform/layer.tf
   layers = compact([
     var.sdk_layer_arn
   ])

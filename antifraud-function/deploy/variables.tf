@@ -25,8 +25,8 @@ variable "sdk_layer_arn" {
 
 variable "tracing_mode" {
   type        = string
-  description = "Lambda function tracing mode"
-  default     = "PassThrough"
+  description = "Lambda function tracing mode ('PassThrough' or 'Active')"
+  default     = "Active" // initial value "PassThrough"
 }
 
 variable "elastic_otlp_endpoint" {
