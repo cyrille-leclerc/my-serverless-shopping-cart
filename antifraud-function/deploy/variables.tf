@@ -1,7 +1,7 @@
 variable "name" {
   type        = string
   description = "Name of created function and API Gateway"
-  default     = "checkout"
+  default     = "antifraud"
 }
 
 variable "aws_region" {
@@ -40,7 +40,3 @@ variable "elastic_otlp_token" {
   description = "Elastic OTLP token (aka APM Server Token)"
 }
 
-variable "anti_fraud_url" {
-  type        = string
-  description = "URL of the Anti Fraud endpoint"
-}

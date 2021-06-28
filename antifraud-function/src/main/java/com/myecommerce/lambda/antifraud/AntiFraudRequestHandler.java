@@ -1,4 +1,4 @@
-package com.myecommerce.lambda.checkout;
+package com.myecommerce.lambda.antifraud;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
@@ -15,14 +15,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 
-public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
-    private static final Logger logger = LogManager.getLogger(ShoppingCartCheckoutRequestHandler.class);
-
-    private String url = System.getenv("ANTI_FRAUD_URL");
+    private static final Logger logger = LogManager.getLogger(AntiFraudRequestHandler.class);
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent, Context context) {
-        logger.info("Checkout order with Anti Fraud service " + url);
+        logger.info("Anti fraud check");
 
         OkHttpClient client =
                 new OkHttpClient.Builder()
@@ -31,10 +29,10 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().url("https://www.google.com/").build();
         try (Response okhttpResponse = client.newCall(request).execute()) {
             response.setBody(
-                    "Hello lambda - fetched " + okhttpResponse.body().string().length() + " bytes.");
+                    "Anti fraud lambda - fetched " + okhttpResponse.body().string().length() + " bytes.");
         } catch (IOException e) {
             throw new UncheckedIOException("Could not fetch with okhttp", e);
         }

@@ -18,9 +18,7 @@
     </properties>
     <modules>
         <module>checkout-function</module>
-        <!--
-        <module>my-downstream-function</module>
-        -->
+        <module>antifraud-function</module>
     </modules>
     <dependencyManagement>
         <dependencies>
