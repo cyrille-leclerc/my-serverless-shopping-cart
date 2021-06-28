@@ -1,0 +1,1 @@
+Copy from https://github.com/open-telemetry/opentelemetry-lambda/tree/e72467a085a2a6e57af133032f85ac5b8bbbb8d1/utils
