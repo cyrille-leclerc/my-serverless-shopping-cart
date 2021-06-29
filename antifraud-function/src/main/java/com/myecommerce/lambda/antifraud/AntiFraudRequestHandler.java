@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.instrumentation.okhttp.v3_0.OkHttpTracing;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -27,8 +29,15 @@ public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRe
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
-        logger.info(() -> "AntiFraudRequestHandler: header: [" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(",")) + "]");
-
+        final SpanContext spanContext = Span.current().getSpanContext();
+        logger.trace(() -> "AntiFraudRequestHandler: header: [" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(",")) + "]");
+        logger.info(() ->
+                "AntiFraudRequestHandler: " +
+                        "span.id=" + spanContext.getSpanId() + ", " +
+                        "trace.id=" + spanContext.getTraceId() + ", " +
+                        "span.isRemote=" + spanContext.isRemote() + ", " +
+                        "header[traceparent]=" + event.getHeaders().get("traceparent")
+        );
         OkHttpClient client =
                 new OkHttpClient.Builder()
                         .addInterceptor(OkHttpTracing.create(GlobalOpenTelemetry.get()).newInterceptor())

@@ -5,6 +5,8 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.instrumentation.okhttp.v3_0.OkHttpTracing;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -41,8 +43,17 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
     }
 
 
-    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent, Context context) {
-        logger.info("Checkout order with Anti Fraud service " + url);
+    public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
+        final SpanContext spanContext = Span.current().getSpanContext();
+
+        logger.trace(() -> "Checkout: header: [" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(",")) + "]");
+        logger.info(() ->
+                "Checkout: " +
+                        "span.id=" + spanContext.getSpanId() + ", " +
+                        "trace.id=" + spanContext.getTraceId() + ", " +
+                        "span.isRemote=" + spanContext.isRemote() + ", " +
+                        "header[traceparent]=" + event.getHeaders().get("traceparent")
+        );
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 
