@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.management.ManagementFactory;
+import java.util.stream.Collectors;
 
 public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
 
@@ -33,6 +35,9 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
                         .addInterceptor(OkHttpTracing.create(GlobalOpenTelemetry.get()).newInterceptor())
                         .addInterceptor(loggingInterceptor)
                         .build();
+
+        logger.info(() -> "Environment variables: " + System.getenv().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
+        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().collect(Collectors.joining(", ")));
     }
 
 

@@ -3,13 +3,14 @@
 receivers:
   otlp:
     protocols:
+      http:
       grpc:
 
 exporters:
   awsxray:
   logging:
     loglevel: debug
-  otlp:
+  otlp/elastic:
     # APM server https endpoint without https://
     endpoint: "${ELASTIC_OTLP_ENDPOINT}"
     headers:
@@ -21,7 +22,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging, otlp, awsxray]
+      exporters: [logging, otlp/elastic]
     metrics:
       receivers: [otlp]
-      exporters: [logging, otlp]
+      exporters: [logging, otlp/elastic]
