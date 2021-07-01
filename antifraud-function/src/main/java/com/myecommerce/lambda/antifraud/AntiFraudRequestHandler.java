@@ -29,13 +29,15 @@ public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRe
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
-        final SpanContext spanContext = Span.current().getSpanContext();
+        Span currentSpan = Span.current();
+
+        final SpanContext spanContext = currentSpan.getSpanContext();
         logger.trace(() -> "AntiFraudRequestHandler: header: [" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(",")) + "]");
         logger.info(() ->
                 "AntiFraudRequestHandler: " +
-                        "span.id=" + spanContext.getSpanId() + ", " +
-                        "trace.id=" + spanContext.getTraceId() + ", " +
-                        "span.isRemote=" + spanContext.isRemote() + ", " +
+                        "spanContext.spanId=" + spanContext.getSpanId() + ", " +
+                        "spanContext.traceId=" + spanContext.getTraceId() + ", " +
+                        "spanContext.isRemote=" + spanContext.isRemote() + ", " +
                         "header[traceparent]=" + event.getHeaders().get("traceparent")
         );
         OkHttpClient client =
@@ -48,7 +50,13 @@ public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRe
         Request request = new Request.Builder().url("https://www.google.com/").build();
         try (Response okhttpResponse = client.newCall(request).execute()) {
             response.setBody(
-                    "Anti fraud lambda - fetched " + okhttpResponse.body().string().length() + " bytes.");
+                    "Anti Fraud lambda - fetched " + okhttpResponse.body().string().length() + " bytes.\n" +
+                            "spanContext.spanId=" + spanContext.getSpanId() + ", " +
+                            "spanContext.traceId=" + spanContext.getTraceId() + ", " +
+                            "spanContext.isRemote=" + spanContext.isRemote() + ", " +
+                            "header[traceparent]=" + event.getHeaders().get("traceparent") + "\n"
+                            + "headers:\n" +
+                            event.getHeaders().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").collect(Collectors.joining()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not fetch with okhttp", e);
         }
