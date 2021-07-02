@@ -29,7 +29,7 @@ module "checkout-lambda-function" {
     OTEL_PROPAGATORS: "tracecontext, baggage" // override the default value "xray, tracecontext,b3, b3multi,"
   }
 
-  tracing_mode = var.tracing_mode
+  tracing_mode = "PassThrough" // ensure xray doesn't modify the trace context. See "api-gateway" enable_xray_tracing below
 
   attach_policy_statements = true
   policy_statements = {
@@ -51,5 +51,5 @@ module "api-gateway" {
   name                = var.name
   function_name       = module.checkout-lambda-function.lambda_function_name
   function_invoke_arn = module.checkout-lambda-function.lambda_function_invoke_arn
-  enable_xray_tracing = var.tracing_mode == "Active"
+  enable_xray_tracing = false // ensure xray doesn't modify the trace context. See AWS Lambda Function attribute `tracing_mode` above
 }

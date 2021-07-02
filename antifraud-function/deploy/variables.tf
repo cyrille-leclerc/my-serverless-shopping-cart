@@ -9,24 +9,11 @@ variable "aws_region" {
   description = "AWS Region"
 }
 
-// variable "collector_layer_arn" {
-//  type        = string
-//  description = "ARN for the Lambda layer containing the OpenTelemetry collector extension"
-//  // TODO(anuraaga): Add default when a public layer is published.
-//}
-
 variable "sdk_layer_arn" {
   type        = string
   description = "ARN for the Lambda layer containing the OpenTelemetry Java Wrapper & Otel Collector"
-  // TODO(anuraaga): Add default when a public layer is published.
-  // https://aws-otel.github.io/docs/getting-started/lambda/lambda-java
-  // arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-ver-1-2-0:1
-}
-
-variable "tracing_mode" {
-  type        = string
-  description = "Lambda function X-RAY tracing mode ('PassThrough' or 'Active')"
-  default     = "PassThrough"
+  // See https://aws-otel.github.io/docs/getting-started/lambda/lambda-java
+  // Example: arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-ver-1-2-0:1
 }
 
 variable "elastic_otlp_endpoint" {
@@ -37,6 +24,6 @@ variable "elastic_otlp_endpoint" {
 variable "elastic_otlp_token" {
   type        = string
   sensitive   = true
-  description = "Elastic OTLP token (aka APM Server Token)"
+  description = "Elastic OTLP token (aka Elastic APM Server Token)"
 }
 

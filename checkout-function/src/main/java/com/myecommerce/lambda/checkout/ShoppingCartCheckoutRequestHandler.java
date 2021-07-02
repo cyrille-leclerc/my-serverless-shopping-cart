@@ -21,9 +21,12 @@ import java.io.UncheckedIOException;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGatewayProxyRequestEvent, APIGatewayProxyResponseEvent> {
+
+    final static Collector<CharSequence, ?, String> INDENTED_LINE_BREAK = Collectors.joining("\n \t", "\t", "");
 
     private static final Logger logger = LogManager.getLogger(ShoppingCartCheckoutRequestHandler.class);
 
@@ -49,8 +52,8 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
                         .addInterceptor(loggingInterceptor)
                         .build();
 
-        logger.info(() -> "Environment variables: \n" + System.getenv().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining(", ")));
-        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().map(entry -> "\t" + entry + "\n").sorted().collect(Collectors.joining(", ")));
+        logger.info(() -> "Environment variables: \n" + System.getenv().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).sorted().collect(INDENTED_LINE_BREAK));
+        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().sorted().collect(INDENTED_LINE_BREAK));
     }
 
 
@@ -64,7 +67,7 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
                         "spanContext.isRemote=" + spanContext.isRemote() + ", " +
                         "header[traceparent]=" + event.getHeaders().get("traceparent")
         );
-        String functionEventHeaders = "Function invocation headers: \n" + event.getHeaders().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining(", "));
+        String functionEventHeaders = "Function invocation headers: \n" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).sorted().collect(INDENTED_LINE_BREAK);
         logger.info(() -> functionEventHeaders);
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
@@ -74,7 +77,7 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
             ResponseBody body = okhttpResponse.body();
 
             String httpResponseBody = body.string();
-            String httpInvocationHeaders = DOWNSTREAM_HTTP_CALL_HEADERS.get().stream().map(value -> "\t" + value + "\n").collect(Collectors.joining());
+            String httpInvocationHeaders = DOWNSTREAM_HTTP_CALL_HEADERS.get().stream().collect(INDENTED_LINE_BREAK);
 
             response.setBody(
                     "Checkout lambda - fetched " + httpResponseBody.length() + " bytes.\n" +

@@ -68,7 +68,11 @@ service:
   * Example service map chaining 2 lambda functions
 <img width="250px" src="https://raw.githubusercontent.com/cyrille-leclerc/my-serverless-shopping-cart/main/docs/images/elastic-observability-apm-service-map-aws-lambda-java-functions.png" />
 
+# Terraform Example
 
+See 
+* https://github.com/cyrille-leclerc/my-serverless-shopping-cart/tree/main/checkout-function/deploy
+* https://github.com/cyrille-leclerc/my-serverless-shopping-cart/tree/main/utils/terraform/api-gateway-proxy copied from https://github.com/open-telemetry/opentelemetry-lambda/tree/e72467a085a2a6e57af133032f85ac5b8bbbb8d1/utils
 
 # Learn more
 
