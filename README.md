@@ -1,6 +1,10 @@
+# Instrumenting AWS Lambda Java functions with OpenTelemetry SDK and Elastic Observability
 
+## Getting started
 
-# Getting started
+ℹ️ This tutorial explains how to instrument Java lambda functions with the OpenTelemetry SDK (ie manual instrumentation of the code). For auto instrumentation via the OpenTelemetry Auto Instrumentation Java Agent, see [AWS Distro for OpenTelemetry Lambda Support For Java (Auto-instrumentation Agent)](https://aws-otel.github.io/docs/getting-started/lambda/lambda-java-auto-instr)
+
+* See reference documentation: https://aws-otel.github.io/docs/getting-started/lambda
 
 * Implement your Lambda function extending `com.amazonaws.services.lambda.runtime.RequestHandler`
 
@@ -64,9 +68,11 @@ service:
 * Deploy your Lambda function, test it and visualize it in Elastic Observability's APM view:
 * Verify in Elastic Observability / APM
     * Example distributed trace chaining 2 lambda functions 
-<img width="250px" src="https://raw.githubusercontent.com/cyrille-leclerc/my-serverless-shopping-cart/main/docs/images/elastic-observability-apm-trace-aws-lambda-java-functions.png" />
-  * Example service map chaining 2 lambda functions
-<img width="250px" src="https://raw.githubusercontent.com/cyrille-leclerc/my-serverless-shopping-cart/main/docs/images/elastic-observability-apm-service-map-aws-lambda-java-functions.png" />
+    
+      <img width="450px" src="https://raw.githubusercontent.com/cyrille-leclerc/my-serverless-shopping-cart/main/docs/images/elastic-observability-apm-trace-aws-lambda-java-functions.png" />
+   * Example service map chaining 2 lambda functions
+   
+     <img width="450px" src="https://raw.githubusercontent.com/cyrille-leclerc/my-serverless-shopping-cart/main/docs/images/elastic-observability-apm-service-map-aws-lambda-java-functions.png" />
 
 # Terraform Example
 
