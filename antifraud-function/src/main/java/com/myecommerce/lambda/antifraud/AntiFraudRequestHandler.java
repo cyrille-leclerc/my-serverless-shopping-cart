@@ -24,8 +24,8 @@ public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRe
     private static final Logger logger = LogManager.getLogger(AntiFraudRequestHandler.class);
 
     public AntiFraudRequestHandler() {
-        logger.info(() -> "Environment variables: " + System.getenv().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
-        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().collect(Collectors.joining(", ")));
+        logger.info(() -> "Environment variables: \n" + System.getenv().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining(", ")));
+        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().map(entry -> "\t" + entry + "\n").sorted().collect(Collectors.joining(", ")));
     }
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
@@ -54,9 +54,9 @@ public class AntiFraudRequestHandler implements RequestHandler<APIGatewayProxyRe
                             "spanContext.spanId=" + spanContext.getSpanId() + ", " +
                             "spanContext.traceId=" + spanContext.getTraceId() + ", " +
                             "spanContext.isRemote=" + spanContext.isRemote() + ", " +
-                            "header[traceparent]=" + event.getHeaders().get("traceparent") + "\n"
-                            + "headers:\n" +
-                            event.getHeaders().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").collect(Collectors.joining()));
+                            "event.header[traceparent]=" + event.getHeaders().get("traceparent") + "\n"
+                            + "event.headers:\n" +
+                            event.getHeaders().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining()));
         } catch (IOException e) {
             throw new UncheckedIOException("Could not fetch with okhttp", e);
         }

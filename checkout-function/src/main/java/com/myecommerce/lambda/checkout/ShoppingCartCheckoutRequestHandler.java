@@ -39,7 +39,6 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
 
     public ShoppingCartCheckoutRequestHandler() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor((msg) -> {
-            logger.debug(msg);
             DOWNSTREAM_HTTP_CALL_HEADERS.get().add(msg);
 
         });
@@ -50,15 +49,14 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
                         .addInterceptor(loggingInterceptor)
                         .build();
 
-        logger.info(() -> "Environment variables: " + System.getenv().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(", ")));
-        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().collect(Collectors.joining(", ")));
+        logger.info(() -> "Environment variables: \n" + System.getenv().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining(", ")));
+        logger.info(() -> "JVM arguments: " + ManagementFactory.getRuntimeMXBean().getInputArguments().stream().map(entry -> "\t" + entry + "\n").sorted().collect(Collectors.joining(", ")));
     }
 
 
     public APIGatewayProxyResponseEvent handleRequest(APIGatewayProxyRequestEvent event, Context context) {
         final SpanContext spanContext = Span.current().getSpanContext();
 
-        logger.trace(() -> "Checkout: header: [" + event.getHeaders().entrySet().stream().map(entry -> entry.getKey() + ": " + entry.getValue()).collect(Collectors.joining(",")) + "]");
         logger.info(() ->
                 "Checkout: " +
                         "spanContext.spanId=" + spanContext.getSpanId() + ", " +
@@ -66,6 +64,8 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
                         "spanContext.isRemote=" + spanContext.isRemote() + ", " +
                         "header[traceparent]=" + event.getHeaders().get("traceparent")
         );
+        String functionEventHeaders = "Function invocation headers: \n" + event.getHeaders().entrySet().stream().map(entry -> "\t" + entry.getKey() + ": " + entry.getValue() + "\n").sorted().collect(Collectors.joining(", "));
+        logger.info(() -> functionEventHeaders);
 
         APIGatewayProxyResponseEvent response = new APIGatewayProxyResponseEvent();
 
@@ -73,18 +73,23 @@ public class ShoppingCartCheckoutRequestHandler implements RequestHandler<APIGat
         try (Response okhttpResponse = httpClient.newCall(request).execute()) {
             ResponseBody body = okhttpResponse.body();
 
-            String bodyContent = body.string();
+            String httpResponseBody = body.string();
+            String httpInvocationHeaders = DOWNSTREAM_HTTP_CALL_HEADERS.get().stream().map(value -> "\t" + value + "\n").collect(Collectors.joining());
+
             response.setBody(
-                    "Checkout lambda - fetched " + bodyContent.length() + " bytes.\n" +
+                    "Checkout lambda - fetched " + httpResponseBody.length() + " bytes.\n" +
                             "spanContext.spanId=" + spanContext.getSpanId() + ", " +
                             "spanContext.traceId=" + spanContext.getTraceId() + ", " +
                             "spanContext.isRemote=" + spanContext.isRemote() + ", " +
-                            "header[traceparent]=" + event.getHeaders().get("traceparent") + "\n" +
-                            "downstreamHttpCallRequestHeaders\n" +
-                            DOWNSTREAM_HTTP_CALL_HEADERS.get().stream().map(value -> "\t" + value + "\n").collect(Collectors.joining()) +
+                            "event.header[traceparent]=" + event.getHeaders().get("traceparent") + "\n" +
+                            "\n\n" +
+                            functionEventHeaders +
+                            "\n\n" +
+                            "downstreamHttpCallHeaders\n" +
+                            httpInvocationHeaders +
                             "\n\n" +
                             "ANTI FRAUD RESPONSE\n" +
-                            bodyContent
+                            httpResponseBody
 
             );
         } catch (IOException e) {
