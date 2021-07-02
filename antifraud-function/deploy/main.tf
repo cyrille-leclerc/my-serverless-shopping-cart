@@ -21,9 +21,10 @@ module "antifraud-lambda-function" {
 
   environment_variables = {
     AWS_LAMBDA_EXEC_WRAPPER = "/opt/otel-proxy-handler"
-    OPENTELEMETRY_COLLECTOR_CONFIG_FILE: "/var/task/opentelemetry-collector.yaml"
     ELASTIC_OTLP_ENDPOINT: var.elastic_otlp_endpoint
     ELASTIC_OTLP_TOKEN: var.elastic_otlp_token
+    OPENTELEMETRY_COLLECTOR_CONFIG_FILE: "/var/task/opentelemetry-collector.yaml"
+    OTEL_PROPAGATORS: "tracecontext, baggage" // override the default value "xray, tracecontext,b3, b3multi,"
   }
 
   tracing_mode = var.tracing_mode
