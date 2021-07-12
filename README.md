@@ -30,7 +30,7 @@ OkHttpClient httpClient = new OkHttpClient.Builder()
 * Add in the root directory of your lambda function (e.g. `src/main/resources/opentelemetry-collector.yaml`) the configuration of the [AWS Distro for OpenTelemetry Collector](https://github.com/aws-observability/aws-otel-collector) to export the data to Elastic Observability
 
 ```yaml
-# Copy collector.yaml in the root directory of the lambda function
+# Copy opentelemetry-collector.yaml in the root directory of the lambda function
 # Set an environment variable 'OPENTELEMETRY_COLLECTOR_CONFIG_FILE' to '/var/task/opentelemetry-collector.yaml'
 receivers:
   otlp:
