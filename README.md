@@ -28,7 +28,8 @@ OkHttpClient httpClient = new OkHttpClient.Builder()
 ````
 
 * Add in the root directory of your lambda function (e.g. `src/main/resources/opentelemetry-collector.yaml`) the configuration of the [AWS Distro for OpenTelemetry Collector](https://github.com/aws-observability/aws-otel-collector) to export the data to Elastic Observability
-````yaml
+
+```yaml
 # Copy collector.yaml in the root directory of the lambda function
 # Set an environment variable 'OPENTELEMETRY_COLLECTOR_CONFIG_FILE' to '/var/task/opentelemetry-collector.yaml'
 receivers:
@@ -40,7 +41,7 @@ receivers:
 exporters:
   logging:
     loglevel: debug
-  otlp:
+  otlp/elastic:
     # Elastic APM server https endpoint without the "https://" prefix
     endpoint: "${ELASTIC_OTLP_ENDPOINT}"
     headers:
@@ -51,11 +52,11 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging, otlp]
+      exporters: [logging, otlp/elastic]
     metrics:
       receivers: [otlp]
-      exporters: [logging, otlp]
-````
+      exporters: [logging, otlp/elastic]
+```
 
 * Configure you AWS Lambda function with:
    * [Function layer](https://docs.aws.amazon.com/lambda/latest/dg/API_Layer.html): The latest [AWS Lambda layer for OpenTelemetry](https://aws-otel.github.io/docs/getting-started/lambda/lambda-java)  (e.g. `arn:aws:lambda:eu-west-1:901920570463:layer:aws-otel-java-wrapper-ver-1-2-0:1`)
